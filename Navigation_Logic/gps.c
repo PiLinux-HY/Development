@@ -1,9 +1,49 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <float.h>
 
 #define V 35
 #define INF INT_MAX
+
+// 위도와 경도를 저장하는 구조체와 함수 선언
+typedef struct {
+    int nodeId; //node번호
+    double latitude; //위도
+    double longitude; //경도
+} NodeLocation;
+
+double degreesToRadians(double degrees) {
+    return degrees * (M_PI / 180.0);
+}
+
+double distanceBetweenPoints(double lat1, double lon1, double lat2, double lon2) {
+    double phi1 = degreesToRadians(lat1);
+    double phi2 = degreesToRadians(lat2);
+    double deltaPhi = degreesToRadians(lat2 - lat1);
+    double deltaLambda = degreesToRadians(lon2 - lon1);
+    double a = sin(deltaPhi / 2) * sin(deltaPhi / 2) +
+               cos(phi1) * cos(phi2) *
+               sin(deltaLambda / 2) * sin(deltaLambda / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return 6371e3 * c; // 결과는 미터 단위
+}
+
+int findNearestNode(double userLat, double userLon, NodeLocation *nodeLocations, int numNodes) {
+    int nearestNodeId = -1;
+    double nearestDistance = DBL_MAX;
+    for (int i = 0; i < numNodes; i++) {
+        double dist = distanceBetweenPoints(userLat, userLon, nodeLocations[i].latitude, nodeLocations[i].longitude);
+        if (dist < nearestDistance) {
+            nearestNodeId = i; // nodeId 대신 i를 사용하여 배열의 인덱스를 저장
+            nearestDistance = dist;
+        }
+    }
+    return nearestNodeId;
+}
 
 // 인접 행렬을 초기화하는 함수
 void initializeGraph(int graph[V][V]) {
@@ -181,10 +221,23 @@ void dijkstra(int graph[V][V], int src, int dest) {
 int main() {
     int graph[V][V];
     initializeGraph(graph);
-    int src, dest;
+    // 실제 위치 데이터로 NodeLocation 배열을 초기화하는 부분이 필요.
+    NodeLocation nodeLocations[V] = {
+        // {nodeId, latitude, longitude}, // 각 노드에 대한 실제 위치 정보를 여기에 추가
+    };
+    // 사용자의 현재 위치 (예시)
+    double userLatitude = 48.8566; // 파리의 위도
+    double userLongitude = 2.3522;  // 파리의 경도
 
-    scanf("%d %d", &src, &dest); //출발노드와 도착노드 입력
+    // 가장 가까운 노드 찾기
+    int nearestNodeId = findNearestNode(userLatitude, userLongitude, nodeLocations, V);
+    printf("Nearest Node to User: %d\n", nearestNodeId + 1);
 
-    dijkstra(graph, src-1, dest-1); //노드를 index에맞춰 -1
+    // 목적지 설정 (노드 번호, 예시로 1번 노드에서 35번 노드까지의 경로를 계산)
+    int src = nearestNodeId; // 사용자의 현재 위치에서 가장 가까운 노드
+    int dest = 34; // 목적지 노드, 실제 사용 시에는 사용자가 선택할 수 있도록 함
+
+    dijkstra(graph, src, dest);
+
     return 0;
 }
