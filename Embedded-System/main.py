@@ -7,7 +7,7 @@ import recording_module
 import transmitting_module
 import threading
 import receiving_module
-import navigaion_module
+import navigation_module
 
 global flag
 flag = 0 
