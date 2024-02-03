@@ -10,12 +10,14 @@ import receiving_module
 import navigation_module
 
 global flag
-flag = 0 
+flag = 0
+a = 1 
 
 def buttonPressed(channel) :
     flag = flag + 1
 
 button_pin = 27
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button_pin, GPIO.IN)
 GPIO.add_event_detect(button_pin, GPIO.RISING)
