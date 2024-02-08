@@ -1,4 +1,4 @@
-import Pyaudio
+import pyaudio
 import wave
 import time
 
@@ -38,9 +38,9 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
-wf = wave.open(WAVE_OUTPUT_FILENAME, ‘wb’)
+wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
 wf.setnchannels(CHANNELS)
 wf.setsampwidth(p.get_sample_size(FORMAT))
 wf.setframerate(SAMPLE_RATE)
-wf.writeframes(b’’.join(frames))
+wf.writeframes(b''.join(frames))
 wf.close()
