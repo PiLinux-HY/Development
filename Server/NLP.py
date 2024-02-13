@@ -19,11 +19,11 @@ def processing(string):
     y_random_predicted = bilstm_model.predict(np.array(X_random))
     y_random_predicted = np.argmax(y_random_predicted, axis=-1)
 
+    answer = ""
+
     np.array([y_random_predicted])
     y_random_predicted = y_random_predicted[0]
-
-    for idx, word in zip(y_random_predicted, random_sequence):
-        if index_list[idx] != 1 :
+    for word, idx in zip(random_sequence, y_random_predicted):
+        if idx != 1:
             answer += word
-
     return answer
