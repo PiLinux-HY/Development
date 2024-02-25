@@ -1,0 +1,64 @@
+import queue
+import threading 
+import time
+
+flag_exit = False
+
+QUEUE_SIZE = 10
+mq = queue.Queue(QUEUE_SIZE)
+
+def GPS_main() :
+    while True:
+        mq.put("GPS");
+        time.sleep(0.5)
+
+        global flag_exit
+        if (flag_exit): 
+            break
+
+def Navi_main() :
+    while True :
+        mq.put("Navi");
+        time.sleep(1)
+
+        global flag_exit
+        if (flag_exit) :
+            break
+
+def Audio_main() :
+    while True :
+        try :
+            data = mq.get(True,2)
+            print("Data " + data)
+
+            global flag_exit
+            if (flag_exit) :
+                break
+        except queue.Empty:
+            print("Stop")
+            break
+
+
+def main():
+    print("Thread & Message Queue Example")
+    try:
+        t1 = threading.Thread(target=GPS_main)
+        t1.start()
+        t2 = threading.Thread(target=Navi_main)
+        t2.start()
+        t3 = threading.Thread(target=Audio_main)
+        t3.start()
+        while True:
+            time.sleep(0.1)
+            
+    except KeyboardInterrupt:
+        print("Ctrl+C Pressed.")
+        global flag_exit
+        flag_exit = True
+    
+        t1.join()
+        t2.join()
+        t3.join()
+
+if __name__ == "__main__":
+    main()
