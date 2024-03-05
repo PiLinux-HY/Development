@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 #include <limits.h>
 #include <stdbool.h>
@@ -199,7 +198,7 @@ void initializeGraph(int graph[V][V]) {
     graph[34][33]=30;
 }
 
-int minDistance(int dist[], bool sptSet[]) {
+int minDistance(long long dist[], bool sptSet[]) {
     // 최소 거리를 찾는 로직
     int min = INT_MAX, min_index = -1;
     for (int v = 0; v < V; v++)
@@ -215,96 +214,139 @@ void printPath(int parent[], int j) {
     printPath(parent, parent[j]); //재귀로 계속 위의 부모node를 입력받아 경로를 역추적하여 출력한다.
     printf("%d ", j + 1);
 }
-
-void dijkstra(int graph[V][V], int src, int dest) {
-    // 다익스트라 알고리즘 구현
-    int dist[V];
+// 수정된 dijkstra 함수와 필요한 다른 함수들은 그대로 유지
+void dijkstra(int graph[V][V], int src, int dest, int parent[V]) {
+    long long dist[V];
+    int i, count, u, v;
     bool sptSet[V];
-    int parent[V];
 
-    for (int i = 0; i < V; i++) {
-        parent[i] = -1;
+    for (i = 0; i < V; i++) {
+        parent[src] = -1;
         dist[i] = INF;
         sptSet[i] = false;
     }
 
     dist[src] = 0;
 
-    for (int count = 0; count < V - 1; count++) { //V-1인이유:마지막 남은 노드는 자연스럽게 다음 노드가 되기때문.
-        int u = minDistance(dist, sptSet);
+    for (count = 0; count < V - 1; count++) {
+        u = minDistance(dist, sptSet);
         sptSet[u] = true;
-        for (int v = 0; v < V; v++)
-            if (!sptSet[v] && graph[u][v] && dist[u] != INF && ((long long)dist[u] + graph[u][v] < dist[v])) { //최단경로에 아직 포함되어있지않고, 전 노드에 연결되어있으며, 
+
+        for (v = 0; v < V; v++)
+            if (!sptSet[v] && graph[u][v] && dist[u] != INF && dist[u] + graph[u][v] < dist[v]) {
                 parent[v] = u;
                 dist[v] = dist[u] + graph[u][v];
             }
     }
-
-    printf("Distance from Node %d to Node %d is: %d\n", src + 1, dest + 1, dist[dest]);
-    printf("Path: %d ", src + 1);
+    printf("Distance from Node %d to Node %d is: %lld\n", src + 1, dest + 1, dist[dest]);
+    printf("Path: %d\n ", src + 1);
     printPath(parent, dest);
+}
+// 최단 경로를 역추적하여 다음 노드를 찾는 함수
+int getNextNodeInPath(int parent[], int currentNode, int dest) {
+    while (parent[dest] != currentNode && parent[dest] != -1) {
+        dest = parent[dest];
+    }
+    return dest;
 }
 
 int main() {
     int graph[V][V];
     initializeGraph(graph);
-    
     NodeLocation nodeLocations[V] = {
         // 노드 위치 초기화 {노드번호,위도,경도}
-        {0, 37.30006, 126.8377},
-        {1, 37.29985, 126.8371},
+        {0, 37.30007, 126.8377},
+        {1, 37.29986, 126.8372},
         {2, 37.29980, 126.8370},
-        {3, 37.29925, 126.8374},
-        {4, 37.29911, 126.8370},
-        {5, 37.29884, 126.8376},
-        {6, },
-        {7, },
+        {3, 37.29927, 126.8373},
+        {4, 37.29916, 126.8371},
+        {5, 37.29882, 126.8376},
+        {6, 37.29857, 126.8377},
+        {7, 37.29840, 126.8378},
         {8, },
         {9, },
-        {10, },
-        {11, },
-        {12, },
-        {13, },
-        {14, },
-        {15, },
-        {16, },
-        {17, },
-        {18, },
-        {19, },
-        {20, },
-        {21, },
-        {22, },
-        {23, },
-        {24, },
-        {25, },
-        {26, },
-        {27, },
-        {28, },
-        {29, },
-        {30, },
-        {31, },
-        {32, },
-        {33, },
-        {34, }
+        {10, 37.29825, 126.8369},
+        {11, 37.29816, 126.8369},
+        {12, 37.29790, 126.8363},
+        {13, 37.29761, 126.8356},
+        {14, 37.29752, 126.8353},
+        {15, 37.29738, 126.8354},
+        {16, 37.29710, 126.8356},
+        {17, 37.29700, 126.8353},
+        {18, 37.29747, 126.8356},
+        {19, 37.29693, 126.8360},
+        {20, 37.29696, 126.8360},
+        {21, 37.29758, 126.8362},
+        {22, 37.29769, 126.8361},
+        {23, 37.29798, 126.8368},
+        {24, 37.29790, 126.8369},
+        {25, 37.29839, 126.8368},
+        {26, 37.29891, 126.8365},
+        {27, 37.29899, 126.8366},
+        {28, 37.29814, 126.8361},
+        {29, 37.29836, 126.8361},
+        {30, 37.29864, 126.8358},
+        {31, 37.29834, 126.8351},
+        {32, 37.29821, 126.8349},
+        {33, 37.29811, 126.8349},
+        {34, 37.29804, 126.8347}
     };
+    
+    double prevLatitude = 0, prevLongitude = 0; // 사용자의 이전 위치
+    bool isFirstUpdate = true; // 첫 위치 업데이트 확인
 
-    // 사용자의 현재 위치와 목적지 설정
-    double userLatitude = 48.8566; // 현재 위치의 위도 예시
-    double userLongitude = 2.3522;  // 현재 위치의 경도 예시
+    // 사용자의 현재 위치 입력
+    double userLatitude, userLongitude;
+    printf("Enter your current latitude and longitude: ");
+    scanf("%lf %lf", &userLatitude, &userLongitude);
+
     int nearestNodeId = findNearestNode(userLatitude, userLongitude, nodeLocations, V);
+    printf("Nearest node to your location: %d\n", nearestNodeId + 1);
 
-    // 목적지 설정 및 다익스트라 알고리즘으로 경로 계산
-    int src = nearestNodeId;
-    int dest = 34; // 예시 목적지
-    dijkstra(graph, src, dest);
+    int dest;
+    printf("Enter your destination node (1 to %d): ", V);
+    scanf("%d", &dest);
+    dest--; // 사용자 입력 조정
 
-    // 사용자의 현재 방향과 목적지 방향을 기반으로 방향 지시 생성
-    // 이 부분은 실제 GPS 데이터를 사용하여 반복적으로 업데이트해야 합니다.
-    double nextNodeLatitude = nodeLocations[dest].latitude;
-    double nextNodeLongitude = nodeLocations[dest].longitude;
-    double userBearing = Bearing(userLatitude, userLongitude, nextNodeLatitude, nextNodeLongitude);
-    double targetBearing = userBearing; // 실제 구현에서는 다음 노드로의 방향을 계산해야 합니다.
-    generateDirection(userBearing, targetBearing);
+    int parent[V];
+    dijkstra(graph, nearestNodeId, dest, parent);
+    
+    // 기존 코드에서 다음 노드 방향 계산 부분
+    int nextNode = getNextNodeInPath(parent, nearestNodeId, dest);
+    double nextNodeLatitude = nodeLocations[nextNode].latitude;
+    double nextNodeLongitude = nodeLocations[nextNode].longitude;
+    // 초기 방향 지시를 위한 targetBearing 계산
+    double targetBearing = Bearing(userLatitude, userLongitude, nextNodeLatitude, nextNodeLongitude);
 
+    // 초기 방향 지시 제공
+    generateDirection(targetBearing, targetBearing); // 이제 targetBearing을 사용하여 목표 방향을 제공
+
+    // 사용자 위치 업데이트 및 새로운 방향 지시 로직
+    while (true) {
+        printf("Enter your current latitude and longitude: ");
+        scanf("%lf %lf", &userLatitude, &userLongitude);
+
+        // 사용자의 실제 이동 방향 계산
+        double userBearing = Bearing(prevLatitude, prevLongitude, userLatitude, userLongitude);
+
+        // 다음 노드를 찾고, 다음 노드로의 목표 방향 계산
+        int currentNode = findNearestNode(userLatitude, userLongitude, nodeLocations, V);
+        nextNode = getNextNodeInPath(parent, currentNode, dest);
+        nextNodeLatitude = nodeLocations[nextNode].latitude;
+        nextNodeLongitude = nodeLocations[nextNode].longitude;
+        targetBearing = Bearing(userLatitude, userLongitude, nextNodeLatitude, nextNodeLongitude);
+
+        // 사용자의 현재 방향과 목표 방향을 기반으로 방향 지시 제공
+        generateDirection(userBearing, targetBearing);
+
+        // 사용자와 목적지 사이의 거리를 계산하여 목적지 도착 여부 확인
+        double distanceToDestination = distanceBetweenPoints(userLatitude, userLongitude, nodeLocations[dest].latitude, nodeLocations[dest].longitude);
+        if (distanceToDestination <= 30) {
+            printf("You are now very close to your destination.\n");
+            break;
+        }
+        prevLatitude = userLatitude;
+        prevLongitude = userLongitude;
+    }
     return 0;
 }
