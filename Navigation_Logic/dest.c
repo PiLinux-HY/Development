@@ -341,7 +341,7 @@ int main() {
 
         // 사용자와 목적지 사이의 거리를 계산하여 목적지 도착 여부 확인
         double distanceToDestination = distanceBetweenPoints(userLatitude, userLongitude, nodeLocations[dest].latitude, nodeLocations[dest].longitude);
-        if (distanceToDestination <= 30) {
+        if (distanceToDestination <= 5) {
             printf("You are now very close to your destination.\n");
             break;
         }
