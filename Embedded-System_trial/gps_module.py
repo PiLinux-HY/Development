@@ -1,16 +1,18 @@
-import serial
-import pynmea2
+import socket
 
-def location():
-    while True:
-        port="/dev/serial0"
-        ser =serial.Serial(port,baudrate=9600,timeout=0.5)
-        dataout = pynmea2.NMEAStreamReader()
-        newdata =ser.readline()
-        n_data =newdata.decode('latin-1')
-        if n_data[0:6] == "$GPRMC":
-            newloc=pynmea2.parse(n_data)
-            lat=newloc.latitude
-            lng=newloc.longitude
-            break
-    return lat,lng
+HOST = "10.50.42.217"
+PORT = 12345
+
+def telecom():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        #전송부
+        s.connect((HOST, PORT))
+        message = input("전송할 메시지를 입력하세요: ")
+        s.sendall(message.encode())
+
+        #수신부
+        data = s.recv(1024)
+        entity = data.decode("utf-8")
+
+        return entity
+    

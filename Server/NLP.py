@@ -4,13 +4,16 @@ from keras.models import load_model
 import h5py
 import numpy as np
 from konlpy.tag import Okt
+import pickle
 
 okt = Okt()
-src_tokenizer = Tokenizer(filters=None, lower=False)
+with open("C:\\Users\\dongjin\\Desktop\\src_tokenizer.pickle", 'rb') as handle:
+    src_tokenizer = pickle.load(handle)
+    
+bilstm_model = load_model("C:\\Users\\dongjin\\Desktop\\NLP_model.h5")
+
 
 def processing(string):
-    bilstm_model = load_model("ai_model.h5")
-
     random_sequence = okt.morphs(string)
     X_random = src_tokenizer.texts_to_sequences([random_sequence])
     X_random = pad_sequences(X_random, padding='post', maxlen=20)
