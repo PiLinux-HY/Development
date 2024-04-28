@@ -6,6 +6,8 @@ import path
 HOST = '0.0.0.0'  # 모든 인터페이스에서 연결을 수락
 PORT = 1234     # 사용할 포트 번호
 
+NLP.processing("나는 복지관 가고 싶어")
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
     s.listen()
