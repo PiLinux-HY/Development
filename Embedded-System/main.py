@@ -42,10 +42,10 @@ def t1_main():
     print("longitude" + lon)
     
     sentence = stt.transcribe_audio()
-    
+    #
     playing.play("/home/raspberrypi/Desktop/graduate_project_test_/finding.wav") #목적지를 찾겠습니다. 잠시만 기다려주세요
     #sentence = "나는 학술정보관 가고 싶어"
-    route = transmitting_.telecom(sentence)
+    route = transmitting_.telecom(sentence, lat, lon)
     playing.play("/home/raspberrypi/Desktop/graduate_project_test_/will_guide.wav") # 목적지를 안내해드리겠습니다.
 
 
