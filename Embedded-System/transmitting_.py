@@ -3,13 +3,13 @@ import socket
 HOST = "172.17.104.144"
 PORT = 1234
 
-def telecom(message_destination, message_latitude, message_longitude):
+def telecom(message_destination):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         #전송부
         s.connect((HOST, PORT))
         #message_destination = input("전송할 메시지를 입력하세요: ")
-        #message_latitude = 37.2974415 
-        #message_longitude = 126.8355968 
+        message_latitude = 37.2974415 #example
+        message_longitude = 126.8355968 #example
         message = f"{message_destination}|{message_latitude}|{message_longitude}"
         s.sendall(message.encode())
 

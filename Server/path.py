@@ -7,18 +7,24 @@ building_map = {
         "학술정보관": 17,
         "복지관": 34,
         "제사공학관" : 20,
+
         "제삼공학관" : 21,
+
         "제일공학관" : 24,
-        "제일학술관" :29,
+
+        "제일학술관" : 29,
+
         "컨퍼러스홀" : 4,
         "정문" : 0,
         "셔틀콕" : 5,
         "제이과기관" : 8,
+
         "본관": 44,
         "경상관": 37,
         "국제문화관": 39,
         "기숙사": 62,
-        "제일과기관": 64
+        "제일과기관": 64,
+
    
     }
 
@@ -293,17 +299,21 @@ def min_distance(dist, spt_set):
             min_index = i
     return min_index
 
-def dijkstra(graph, src, dest):
+def dijkstra(graph, src, dest, dest_neg=None):
     dist = [INF] * V
     parent = [-1] * V
     spt_set = [False] * V
     dist[src] = 0
+    if dest_neg is not None:
+        dist[dest_neg] = INF
 
     for _ in range(V - 1):
         u = min_distance(dist, spt_set)
         spt_set[u] = True
 
         for v in range(V):
+            if dest_neg is not None and v == dest_neg:
+                continue
             if not spt_set[v] and graph[u][v] != INF and dist[u] + graph[u][v] < dist[v]:
                 parent[v] = u
                 dist[v] = dist[u] + graph[u][v]
@@ -321,7 +331,7 @@ def dijkstra(graph, src, dest):
     return path_str  # Return the path as a string
 
 
-def returnpath(dest, user_lat,user_lon):
+def returnpath(dest, user_lat, user_lon, dest_neg = None):
     graph = initialize_graph()
     # Define your graph connections here
 
@@ -413,7 +423,7 @@ def returnpath(dest, user_lat,user_lon):
 
     src = nearest_node_id
     dest = find_des_node(building_map,dest)  # Example destination node ID
-    way = dijkstra(graph, src, dest)
+    way = dijkstra(graph, src, dest, dest_neg)
 
     return way
     # Removed the path print statement as per request
