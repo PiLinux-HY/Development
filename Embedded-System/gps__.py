@@ -22,10 +22,12 @@ def getposition():
                     lat = newmsg.latitude
                     lng = newmsg.longitude
                     gps = "Latitude=" + str(lat) + " and Longitude=" + str(lng)
-                    print(gps)
+                    return lat, lng
+                    #print(gps)
             except UnicodeDecodeError:
                 print("Error decoding NMEA data")
 
     except serial.SerialException as e:
         print("Serial connection error:", e)
         time.sleep(1)  # 재시도를 위해 잠시 대기
+    
